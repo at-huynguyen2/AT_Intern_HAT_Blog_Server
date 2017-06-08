@@ -3,27 +3,31 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       #Huy developer
-      post '/signup', to: 'users#create'
-      post '/signin', to: 'authorizations#create'
-      delete '/signout', to: 'authorizations#destroy'
-      put '/reset_password', to: 'authorizations#update'
-      # resources :attentions, only: [:index]
-      get '/likes', to: 'likes#show'
-      get '/follows', to: 'follows#show'
-      get '/followers', to: 'followers#show'
-
-      post '/suggests', to: 'suggests#create'
-      resources :users, only: [:index, :create, :update, :show, :destroy] do
+      resources :authorizations, except: [:index, :new, :edit]
+      resources :users, param: :username, except: [:new, :edit] do
         member do
-          get :confirm_email
+          get "/user_articles", to: "users/user_articles#index"
         end
+        resources :follow_users, only: [:index, :create]
       end
-      resources :tags, only: [:index, :create, :update, :show, :destroy]
-      resources :categories, only: [:index, :create, :update, :show, :destroy]
+      namespace :articles do
+        resources :hot_articles, only: [:index]
+      end
+      resources :tags, except: [:new, :edit]
+      resources :categories, except: [:new, :edit]
+      resources :notifications, only: [:index,:update]
+      namespace :articles do
+        resources :hot_articles, only: [:index]
+      end
+      resources :searchs, param: :key, only: [:show]
 
       #Thap developer
-      # resources :users
-      resources :articles, only: [:index, :create, :update, :show, :destroy]
+      resources :articles, param: :slug,only: [:index,:create, :update, :show, :destroy] do
+        resources :comments
+        resources :likes, only: [:index, :create]
+        resources :follows, only: [:index,:create]
+      end
+      resources :tags
     end
   end
 end

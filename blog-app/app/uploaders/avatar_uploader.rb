@@ -13,11 +13,8 @@ class AvatarUploader < CarrierWave::Uploader::Base
 
   # my setting
 
-  # process resize_to_fit: [800, 800]
-
-  # version :thumb do
-  #   process resize_to_fill: [200,200]
-  # end
+  include CarrierWave::MiniMagick
+  process resize_to_limit: [500, 500]
 
 
   def store_dir
@@ -29,11 +26,11 @@ class AvatarUploader < CarrierWave::Uploader::Base
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
-  # def default_url(*args)
-  #   # For Rails 3.1+ asset pipeline compatibility:
-  #   # ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
-  #
-  #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
+  # def default_url
+    # For Rails 3.1+ asset pipeline compatibility:
+    # ActionController::Base.helpers.asset_path("uploads/avatar/default-avatar.png")
+
+    # "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   # end
 
   # Process files as they are uploaded:

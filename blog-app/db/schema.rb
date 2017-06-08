@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170518133110) do
+ActiveRecord::Schema.define(version: 20170523085143) do
 
   create_table "articles", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "title"
@@ -18,10 +18,13 @@ ActiveRecord::Schema.define(version: 20170518133110) do
     t.string   "title_image"
     t.integer  "user_id"
     t.integer  "category_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.integer  "count_like",                default: 0
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.boolean  "deleted"
+    t.string   "slug"
     t.index ["category_id"], name: "fk_rails_af09d53ead", using: :btree
+    t.index ["slug"], name: "index_articles_on_slug", using: :btree
     t.index ["user_id"], name: "fk_rails_3d31dad1cc", using: :btree
   end
 
@@ -35,7 +38,8 @@ ActiveRecord::Schema.define(version: 20170518133110) do
   create_table "attentions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "article_id"
     t.integer "user_id"
-    t.boolean "types",      default: true
+    t.boolean "isLiked",    default: false
+    t.boolean "isFollowed", default: false
     t.index ["article_id"], name: "fk_rails_f8c0064c5c", using: :btree
   end
 
@@ -45,28 +49,31 @@ ActiveRecord::Schema.define(version: 20170518133110) do
   end
 
   create_table "comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer "user_id"
-    t.integer "article_id"
-    t.text    "content",    limit: 65535
+    t.integer  "user_id"
+    t.integer  "article_id"
+    t.text     "content",    limit: 65535
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.index ["article_id"], name: "fk_rails_3bf61a60d3", using: :btree
     t.index ["user_id"], name: "fk_rails_03de2dc08c", using: :btree
   end
 
   create_table "follow_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "user_id"
-    t.integer "be_followed_id"
-    t.boolean "isChecked",      default: false
+    t.integer "follower_id"
+    t.boolean "isChecked",   default: false
     t.index ["user_id"], name: "fk_rails_6bfac4ba98", using: :btree
   end
 
   create_table "notifications", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.integer "notificationable_id"
-    t.string  "notificationable_type"
-    t.integer "user_id"
-    t.string  "message"
-    t.string  "image"
-    t.boolean "isTrue"
-    t.boolean "isChecked",             default: true
+    t.integer  "notificationable_id"
+    t.string   "notificationable_type"
+    t.integer  "user_id"
+    t.string   "message"
+    t.string   "image"
+    t.boolean  "isChecked",             default: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
   end
 
   create_table "tags", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

@@ -1,11 +1,24 @@
 class Api::V1::AuthorizationsController < BaseController
   #User Login
-  before_action :authentication, only: [:update, :destroy]
+  before_action :authentication!, only: [:update, :destroy]
+
+  # confirm email for register
+  def show
+    user = User.with_deleted.find_by_confirm_token(params[:id])
+    if !user.blank?
+      user.email_activate
+      msg = { status: "success", message: "Activated", code: 200}
+      render json: user
+    else
+      msg = { status: "unsuccess", message: "You must cofirm email", code: 406 }
+      render json: msg
+    end
+  end
 
   def create
     user = User.find_by(email: params[:email])
     if user.blank?
-      render json: { errors: [ status: 400, message: [{ email: "Not match email" }] ]}
+      render json: { errors: [ status: 400, message: [{ email: "Not match email" }] ]} #, status: :non_authoritative_information
     else
       if user.authenticate(params[:password]).blank?
         render json: { errors: [ status: 400, message: [{ password: "Not match password" }] ]}
@@ -19,26 +32,18 @@ class Api::V1::AuthorizationsController < BaseController
   end
 
   def update
-    if current_user.present?
-      if user.authenticate(params[:password_old])
-        user.update_attribute "access_token", params[:password_new]
-        render json: { status: 200 }
-      else
-        render json: { errors: ['Not match password']}, meta: {status: 400 }
-      end
+    if @current_user.authenticate(params[:password_old])
+      @current_user.update_attribute "password", params[:password_new]
+      render json: { status: 200 }
     else
-      render json: auth_error
+      render json: { errors: ['Not match password']}, meta: {status: 400 }
     end
   end
 
   #user Logout
   def destroy
-    if current_user.present?
-      current_user.update_attribute "access_token", nil
-      render json: { status: 200 }
-    else
-      render json: auth_error
-    end
+    @current_user.update_attribute "access_token", nil
+    render json: { status: 200 }
   end
 
   private

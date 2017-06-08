@@ -8,10 +8,12 @@
 #  user_id               :integer
 #  message               :string(255)
 #  image                 :string(255)
-#  isTrue                :boolean
-#  isChecked             :boolean          default("1")
+#  isChecked             :boolean          default("0")
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
 #
 
 class Notification < ApplicationRecord
   belongs_to :notificationable, polymorphic: true
+  
 end

@@ -6,6 +6,8 @@
 #  user_id    :integer
 #  article_id :integer
 #  content    :text(65535)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #
 # Indexes
 #
@@ -18,5 +20,7 @@ class Comment < ApplicationRecord
   belongs_to :user
   validates :content, presence: true
   has_many :notifications, as: :notificationable, dependent: :destroy
+  
+ 
 end
 

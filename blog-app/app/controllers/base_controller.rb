@@ -8,15 +8,15 @@ class BaseController < ApplicationController
   helper_method :current_user
 
   def current_user
-    User.find_by access_token: response.request.env['HTTP_ACCESS_TOKEN']
+    @current_user ||= User.find_by access_token: response.request.env['HTTP_ACCESS_TOKEN']
   end
 
   def auth_error
-    { errors: [ status: 400, message: [{ valid: "Authorization for this user!" }] ]}
+    { errors: [ status: 400, message: [{ valid: "Authentications for this user!" }] ]}
   end
 
   def authentication!
-    current_user
+    render json: auth_error, status: :unauthorized if current_user.blank?
   end
   # check_time_access: use to check user's access use did limited?
   # return:
