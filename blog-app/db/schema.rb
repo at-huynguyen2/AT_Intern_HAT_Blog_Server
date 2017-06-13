@@ -61,7 +61,6 @@ ActiveRecord::Schema.define(version: 20170523085143) do
   create_table "follow_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "user_id"
     t.integer "follower_id"
-    t.boolean "isChecked",   default: false
     t.index ["user_id"], name: "fk_rails_6bfac4ba98", using: :btree
   end
 
@@ -71,10 +70,10 @@ ActiveRecord::Schema.define(version: 20170523085143) do
     t.integer  "user_id"
     t.string   "message"
     t.string   "image"
-    t.integer  "count_notification"
     t.boolean  "isChecked",             default: false
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
+    t.index ["user_id"], name: "fk_rails_b080fb4855", using: :btree
   end
 
   create_table "tags", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -108,4 +107,5 @@ ActiveRecord::Schema.define(version: 20170523085143) do
   add_foreign_key "comments", "articles"
   add_foreign_key "comments", "users"
   add_foreign_key "follow_users", "users"
+  add_foreign_key "notifications", "users"
 end

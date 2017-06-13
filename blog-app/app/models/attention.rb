@@ -29,7 +29,7 @@ class Attention < ApplicationRecord
   validates :user_id, presence: true
   has_many :notifications, as: :notificationable, dependent: :destroy
 
-  scope :follow_action, ->(slug, current_user){
+  def self.follow_action slug, current_user
     article = Article.find_by_slug(slug)
     attention = self.find_by article_id: article.id, user_id: current_user.id
     # user is nguoi duoc follow
@@ -44,7 +44,7 @@ class Attention < ApplicationRecord
         # => truong hop nay ta xoa di record nay.
         if attention.isFollowed == true
           attention.destroy
-          user.update_columns count_notifications: user.count_notifications - 1
+          # user.update_columns count_notifications: user.count_notifications - 1
         else
         # Neu co attention nhung attention voi: isLike=false va isFollow=false.
         # thi khi cap nhat isFollow = false thi:
@@ -76,10 +76,10 @@ class Attention < ApplicationRecord
       attention = Attention.create article_id: article.id, user_id: current_user.id, isFollowed: 1
       create_notification attention, current_user, article, "follow"
     end
-  }
+  end
 
 
-  scope :like_action, ->(slug, current_user){
+  def self.like_action slug, current_user
     article = Article.find_by_slug(slug)
     attention = self.find_by article_id: article.id, user_id: current_user.id
     # user is nguoi duoc follow
@@ -96,7 +96,7 @@ class Attention < ApplicationRecord
         if attention.isLiked == true
           article.update_columns count_like: article.count_like - 1
           attention.destroy
-          user.update_columns count_notifications: user.count_notifications - 1
+          # user.update_columns count_notifications: user.count_notifications - 1
         else
           article.update_columns count_like: article.count_like + 1
           attention.update_columns isLiked: true
@@ -119,7 +119,7 @@ class Attention < ApplicationRecord
       create_notification attention, current_user, article, "like"
     end
     article.count_like
-  }
+  end
 
   # create_notification function
   # => Usage:
@@ -130,7 +130,7 @@ class Attention < ApplicationRecord
     message = Const::message article, current_user, attention_type
     attention.notifications.create user_id: article.attributes["user_id"], message: message, image: article.title_image if current_user.id != article.attributes["user_id"]
     user = User.find(article.attributes["user_id"])
-    user.update_columns count_notifications: user.count_notifications + 1
+    # user.update_columns count_notifications: user.count_notifications + 1
   end
 
   # create_notification function
@@ -149,7 +149,7 @@ class Attention < ApplicationRecord
     else
       notifications.first.destroy
     end
-    user.update_columns count_notifications: user.count_notifications - 1
+    # user.update_columns count_notifications: user.count_notifications - 1
   end
 
 end

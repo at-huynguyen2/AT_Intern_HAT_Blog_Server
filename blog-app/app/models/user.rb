@@ -32,6 +32,8 @@ class User < ActiveRecord::Base
   has_many :attentions
   has_many :follow_user
   has_many :comments
+  has_many :notifications
+
   validates :username, uniqueness: true, presence: true #, format: { without: /\s/, message: "username don't white space" }
   validates :password, presence: true, length: { in: 6..15 }, on: :create
   validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i , message: "Email don't validated" }

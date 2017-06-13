@@ -21,10 +21,10 @@ class Api::V1::ArticlesController < BaseController
   end
 
   def show
-    if current_user.blank? 
+    if current_user.blank?
     Article.user_id = nil
     render json: Article.includes(:comments, :attentions, :user,:tags).find_by_slug!(params[:slug]), serializer: Article::ShowSerializer
-    else    
+    else
     Article.user_id = current_user.id
     render json: Article.includes(:comments, :attentions, :user,:tags).find_by_slug!(params[:slug]), serializer: Article::ShowSerializer
     end

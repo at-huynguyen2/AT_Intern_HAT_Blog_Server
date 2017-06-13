@@ -5,7 +5,6 @@
 #  id          :integer          not null, primary key
 #  user_id     :integer
 #  follower_id :integer
-#  isChecked   :boolean          default("0")
 #
 # Indexes
 #
