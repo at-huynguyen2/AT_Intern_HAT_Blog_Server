@@ -42,9 +42,10 @@ class Attention < ApplicationRecord
         # thi khi cap nhat isFollow = false thi:
         # => attention nay co isLiked = false va isFollowed = false
         # => truong hop nay ta xoa di record nay.
+
         if attention.isFollowed == true
           attention.destroy
-          user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
+          user.update_columns count_notifications: user.count_notifications - 1 if check_decrease_notifications user, attention
         else
         # Neu co attention nhung attention voi: isLike=false va isFollow=false.
         # thi khi cap nhat isFollow = false thi:
@@ -96,7 +97,7 @@ class Attention < ApplicationRecord
         if attention.isLiked == true
           article.update_columns count_like: article.count_like - 1
           attention.destroy
-          user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
+          user.update_columns count_notifications: user.count_notifications - 1 if check_decrease_notifications user, attention
         else
           article.update_columns count_like: article.count_like + 1
           attention.update_columns isLiked: true
@@ -127,9 +128,9 @@ class Attention < ApplicationRecord
   # =>  - Update count_notifications in users table
 
   def self.create_notification attention, current_user, article, attention_type
-    if current_user.id != article.attributes["user_id"] 
+    if current_user.id != article.attributes["user_id"]
       message = Const::message article, current_user, attention_type
-      attention.notifications.create user_id: article.attributes["user_id"], message: message, image: article.title_image 
+      attention.notifications.create user_id: article.attributes["user_id"], message: message, image: article.title_image
       user = User.find(article.attributes["user_id"])
       user.update_columns count_notifications: user.count_notifications + 1
     end
@@ -151,7 +152,19 @@ class Attention < ApplicationRecord
     else
       notifications.first.destroy
     end
-    user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
+    user.update_columns count_notifications: user.count_notifications - 1 if check_decrease_notifications user, attention
+  end
+
+# check_decrease_notifications
+# Arguments:
+# => user:
+# => attentions:
+# Return:
+# => false: If can't decrease notifications count
+# => true: If can decrease notificaions count
+  def self.check_decrease_notifications user, attentions
+    binding.pry
+    user.count_notifications > 0 && attentions.notifications.first.isChecked == true
   end
 
 end
