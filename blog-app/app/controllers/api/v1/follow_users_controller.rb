@@ -20,7 +20,7 @@ class Api::V1::FollowUsersController < BaseController
     else
       binding.pry
       follower.destroy
-      # user.update_columns count_notifications: user.count_notifications - 1
+      user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
     end
     render json: { status: 200 }
   end
