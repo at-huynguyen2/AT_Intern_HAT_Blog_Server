@@ -13,7 +13,12 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #
+# Indexes
+#
+#  fk_rails_b080fb4855  (user_id)
+#
 
 class Notification < ApplicationRecord
-  belongs_to :notificationable, polymorphic: true
+  belongs_to :notificationable, polymorphic: true, dependent: :destroy
+  belongs_to :user
 end

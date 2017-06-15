@@ -21,10 +21,10 @@ class Api::V1::ArticlesController < BaseController
   end
 
   def show
-    if current_user.blank? 
+    if current_user.blank?
     Article.user_id = nil
     render json: Article.includes(:comments, :attentions, :user,:tags).find_by_slug!(params[:slug]), serializer: Article::ShowSerializer
-    else    
+    else
     Article.user_id = current_user.id
     render json: Article.includes(:comments, :attentions, :user,:tags).find_by_slug!(params[:slug]), serializer: Article::ShowSerializer
     end
@@ -53,11 +53,16 @@ class Api::V1::ArticlesController < BaseController
         article.update title: params[:title], content:params[:content],category_id: params[:category_id], user_id: current_user.id
         article.save
         Article.create_tags article, params[:tags]
-      render json: { id: article.id ,slug: article.slug,status: 200, message:"article was sucessfully update "}
+
+        render json: { id: article.id ,slug: article.slug,status: 200, message:"article was sucessfully update "}
       else
         article.update title: params[:title], content: params[:content],title_image: params[:title_image],category_id: params[:category_id], user_id: current_user.id
         article.save
         Article.create_tags article, params[:tags]
+        attentions = Attention.where(article_id: article.id)
+        attentions.each do |att|
+          att.notifications.update_all image: "/uploads/title_image/"+params[:title_image].original_filename
+        end
       render json: { id: article.id ,slug: article.slug,status: 200, message:"article was sucessfully update"}
       end
     else
@@ -65,15 +70,21 @@ class Api::V1::ArticlesController < BaseController
     end
   end
 
-    def destroy
-    if current_user.present?
-     article = Article.find_by_slug!(params[:slug])
-     article.update_columns deleted: true
-     render json: {status: 200 ,message:"deleted success"}
+  def destroy
+    article = Article.find_by_slug!(params[:slug])
+    if @current_user.id == article.attributes["user_id"]
+      article.update_columns deleted: true
+      attentions = Attention.where(article_id: article.id)
+      attentions.each do |att|
+        att.notifications.delete_all
+      end
+      attentions.delete_all
+      @current_user.update_columns count_notifications: @current_user.update_count_notifications
+      render json: {status: 200 ,message:"deleted success"}
     else
-     render json: {status: "unsuccess",message:"you must confirm email"}
-     end
+      render json: { errors: [ status: 400, message: [{ valid: "Authentications for this user!" }] ]}, status: :unauthorized
     end
+  end
 
   private
 

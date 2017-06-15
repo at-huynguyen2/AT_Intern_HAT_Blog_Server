@@ -9,7 +9,7 @@ class Api::V1::FollowUsersController < BaseController
   end
   # On click follow user
   def create
-    user = User.find_by_username params[:user_username]
+    user = User.find_by username: params[:user_username]
     follower = FollowUser.find_by user_id: user.id , follower_id: current_user.id
     if follower.blank?
       #be_followed_id is people go follow orther people (current_user)
@@ -19,7 +19,7 @@ class Api::V1::FollowUsersController < BaseController
       user.update_columns count_notifications: user.count_notifications + 1
     else
       follower.destroy
-      user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
+      user.update_columns count_notifications: user.count_notifications - 1 if FollowUser.check_decrease_notifications user, follower
     end
     render json: { status: 200 }
   end
