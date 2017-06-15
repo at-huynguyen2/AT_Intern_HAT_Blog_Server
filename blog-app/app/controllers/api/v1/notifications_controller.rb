@@ -10,5 +10,4 @@ class Api::V1::NotificationsController < BaseController
     @current_user.update_columns count_notifications: 0
     render json: Notification.where(user_id: current_user.id)
   end
-
 end
