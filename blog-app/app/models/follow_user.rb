@@ -15,4 +15,9 @@
 class FollowUser < ApplicationRecord
   belongs_to :user
   has_many :notifications, as: :notificationable, dependent: :destroy
+
+  def self.check_decrease_notifications user, follow_user
+    return false if follow_user.notifications == Array.new
+    user.count_notifications > 0 && follower.notifications.first.isChecked == true
+  end
 end

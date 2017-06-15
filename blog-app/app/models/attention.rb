@@ -163,7 +163,6 @@ class Attention < ApplicationRecord
 # => false: If can't decrease notifications count
 # => true: If can decrease notificaions count
   def self.check_decrease_notifications user, attentions
-    binding.pry
     user.count_notifications > 0 && attentions.notifications.first.isChecked == true
   end
 

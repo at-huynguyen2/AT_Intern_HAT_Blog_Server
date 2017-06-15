@@ -44,7 +44,7 @@ class Api::V1::CommentsController < BaseController
        comment = Comment.find(params[:id])
        comment.destroy
        user = User.find comment.article.user.id
-       user.update_columns count_notifications: user.count_notifications - 1 if user.count_notifications > 0
+       user.update_columns count_notifications: user.count_notifications - 1 if Comment.check_decrease_notifications user, comment
        render json: {status: 200 ,message:"deleted success"}
       else
        render json: {status: "unsuccess",message:"you must confirm email"}
