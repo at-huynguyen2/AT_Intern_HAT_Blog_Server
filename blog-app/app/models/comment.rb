@@ -20,7 +20,7 @@ class Comment < ApplicationRecord
   belongs_to :user
   validates :content, presence: true
   has_many :notifications, as: :notificationable, dependent: :destroy
-  
+
   # Check final comment of current user that author checked yet?
 # => Have 2 options:
 # =>  - opt1: this comment have notification, check this notification author checked?
@@ -34,6 +34,11 @@ class Comment < ApplicationRecord
       end
     end
     return true
+  end
+
+  def self.check_decrease_notifications user, comment
+    return false if comment.notifications == Array.new
+    user.count_notifications > 0 && comment.notifications.first.isChecked == true
   end
 end
 

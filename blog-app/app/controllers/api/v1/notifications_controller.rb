@@ -7,13 +7,7 @@ class Api::V1::NotificationsController < BaseController
   def update
     notification = Notification.find(params[:id])
     notification.update_columns(isChecked: 1)
-    @current_user.update_columns count_notifications: 0 #@current_user.count_notifications - 1 if @current_user.count_notifications > 0
+    @current_user.update_columns count_notifications: 0
     render json: Notification.where(user_id: current_user.id)
   end
-
-  # def count_notification
-  #   return Notification.where(user_id: current_user.id).where(isChecked: 0).count
-  #   return 2
-  # end
 end
-  

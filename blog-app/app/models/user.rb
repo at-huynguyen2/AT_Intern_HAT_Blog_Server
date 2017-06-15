@@ -32,6 +32,7 @@ class User < ActiveRecord::Base
   has_many :attentions
   has_many :follow_user
   has_many :comments
+  has_many :notifications
   validates :username, uniqueness: true, presence: true #, format: { without: /\s/, message: "username don't white space" }
   validates :password, presence: true, length: { in: 6..15 }, on: :create
   validates :email, presence: true, uniqueness: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i , message: "Email don't validated" }
@@ -62,9 +63,12 @@ class User < ActiveRecord::Base
     follow_user.pluck(:follower_id).include? user_id
   end
 
-  private
   def confirmation_token
     self.confirm_token = SecureRandom.urlsafe_base64.to_s if confirm_token.blank?
+  end
+
+  def update_count_notifications
+    self.notifications.where("isChecked = 0").count
   end
 
 end

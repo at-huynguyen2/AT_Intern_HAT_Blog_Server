@@ -10,5 +10,6 @@ class CreateNotifications < ActiveRecord::Migration[5.0]
       t.boolean :isChecked, default: 0
       t.timestamps
     end
+    add_foreign_key :notifications, :users
   end
 end
