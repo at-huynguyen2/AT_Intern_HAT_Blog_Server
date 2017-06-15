@@ -3,4 +3,5 @@ class Api::V1::NotificationUsersController < BaseController
   def index
     render json:  { users: { count_notifications: current_user.count_notifications }}
   end
+
 end

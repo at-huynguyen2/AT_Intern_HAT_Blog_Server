@@ -8,7 +8,7 @@ class Api::V1::CommentsController < BaseController
 
   def create
     @article = Article.find_by_slug!(params[:article_slug])
-    is_checked = Comment.author_checked_before_notification(current_user, article)
+    is_checked = Comment.author_checked_before_notification(current_user, @article)
     comment = Comment.new.tap do |comment|
       comment.content = params[:content]
       comment.user_id = current_user.id
